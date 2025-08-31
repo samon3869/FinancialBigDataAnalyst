@@ -57,7 +57,34 @@ pprint.pp(sys.path)
 > 빈 문자열('') 때문에 로컬 파일명이 표준/설치 패키지와 같으면 충돌할 수 있어요.
 > .pth 파일이나 PYTHONPATH가 있으면 sys.path에 추가 경로가 들어올 수 있습니다.
 
-## 3. 필요 라이브러리 기재
+
+## 3. 대용량 backdata Git LFS(Large File Storage)에 적재
+
+### ① LFS 전역 설치 및 전역 초기화 (WSL 환경)
+
+```bash
+sudo apt install git-lfs
+git lfs install
+```
+
+### ② LFS 추적파일 설정 (= .gitattributes 파일작성)
+
+```bash
+git lfs track "*.csv"
+git lfs track "*.xlsx"
+git lfs track "*.tbl"
+git lfs track "*.db"
+```
+
+### ③ commit
+
+```bash
+git add .gitattributes
+git commit -m "chore: track large files using Git LFS"
+```
+
+
+## 4. 필요 라이브러리 기재
 
 ### ① 현재 환경에 설치된 패키지 전부 기재(requirements.txt)하는 방식
 
@@ -91,7 +118,8 @@ REQ
 pip-compile --generate-hashes requirements.in   # → requirements.txt 생성
 ```
 
-> [!TIP] HEREDOC 문법
+> [!TIP]
+> HEREDOC 문법
 > cat : 표준입력(STDIN)을 받아 표준출력(STDOUT)에 그대로 내보내는 명령.
 > requirements.in : cat의 출력을 파일로 덮어쓰기(overwrite) 리다이렉션.
 > <<'REQ' : heredoc 시작. 아래에 나오는 줄들을 표준입력으로 넘겨줌. 마지막에 딱 REQ만 적힌 줄을 만나면 입력 종료.
