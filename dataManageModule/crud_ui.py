@@ -1,15 +1,26 @@
 import ipywidgets as widgets
 
+# event handler
+
+def on_search_clicked(b):
+    with search_result:
+        search_result.clear_output()
+        print(
+            f"Searching in [{search_target.value}] "
+            f"for keyword: '{search_input.value}'"
+        )
+
+
 # 1. search UI components
 
-# 1-A serach_control
+# 1-A search_control
 search_target = widgets.Dropdown(
     options=[
         ("Concepts", "concepts"),
         ("Types", "types"),
         ("Problems", "problems"),
     ],
-    description="Target:",
+    description="Schema:",
     layout=widgets.Layout(width="250px")
 )
 
@@ -24,6 +35,9 @@ search_button = widgets.Button(
     button_style="primary",
     icon="search"
 )
+
+search_button.on_click(on_search_clicked)
+
 
 search_control = widgets.HBox([
     search_target,
@@ -40,4 +54,5 @@ search_result = widgets.Output(
 search_detail = widgets.Output(
     layout=widgets.Layout(border="1px solid #ddd", padding="8px", width="900px")
 )
+
 
