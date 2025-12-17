@@ -1,14 +1,42 @@
 import ipywidgets as widgets
+from . import crud_ops
+from .db_connection import get_connection
+from IPython.display import display
+import pandas as pd
 
 # event handler
 
 def on_search_clicked(b):
+        
+    scheama = search_target.value
+    where_clause = search_where.value.strip().replace("\n", " ")
+    
+    conn = get_connection()
+
+    try:
+        if scheama == "concepts":
+            rows = crud_ops.fetch_concepts(conn, where_clause)
+        elif scheama == "types":
+            rows = crud_ops.fetch_types(conn, where_clause)
+        elif scheama == "problems":
+            rows = crud_ops.fetch_problems(conn, where_clause)
+    finally:
+        conn.close()
+
+    df = pd.DataFrame(rows, columns=rows[0].keys()) if rows else pd.DataFrame()
+
     with search_result:
         search_result.clear_output()
         print(
-            f"Searching in [{search_target.value}] "
-            f"for keyword: '{search_input.value}'"
+            f"Search Results: {len(rows)} rows found.",
         )
+
+    with search_detail:
+        search_detail.clear_output()
+        if not df.empty:
+            display(df)
+        else:
+            print("No details to display.")
 
 
 # 1. search UI components
@@ -24,10 +52,10 @@ search_target = widgets.Dropdown(
     layout=widgets.Layout(width="250px")
 )
 
-search_input = widgets.Text(
-    description="Keyword:",
-    placeholder="name, year, note_path ...",
-    layout=widgets.Layout(width="400px")
+search_where = widgets.Textarea(
+    description="WHERE:",
+    placeholder="e.g.\nname LIKE '%normal%'\nyear = 2023",
+    layout=widgets.Layout(width="900px", height="80px")
 )
 
 search_button = widgets.Button(
@@ -36,13 +64,9 @@ search_button = widgets.Button(
     icon="search"
 )
 
-search_button.on_click(on_search_clicked)
-
-
 search_control = widgets.HBox([
-    search_target,
-    search_input,
-    search_button
+widgets.HBox([search_target, search_button]),
+              search_where
 ])
 
 
@@ -56,3 +80,5 @@ search_detail = widgets.Output(
 )
 
 
+# event binding
+search_button.on_click(on_search_clicked)
