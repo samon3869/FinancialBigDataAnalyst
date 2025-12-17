@@ -39,6 +39,10 @@ def on_search_clicked(b):
             print("No details to display.")
 
 
+def on_new_clicked(b):
+    pass  # To be implemented   
+
+
 # 1. search UI components
 
 # 1-A search_control
@@ -80,5 +84,44 @@ search_detail = widgets.Output(
 )
 
 
+
+# 2. new UI components
+
+
+# 2-A. new_control
+new_target = widgets.Dropdown(
+    options=[
+        ("Concepts", "concepts"),
+        ("Types", "types"), 
+        ("Problems", "problems"),
+    ],
+    description="Schema:",
+    layout=widgets.Layout(width="250px")
+)
+
+new_values = widgets.Textarea(
+    description="Values:",
+    placeholder="e.g.\nname='New Concept', description='Description here'",
+    layout=widgets.Layout(width="900px", height="80px")
+)
+
+new_button = widgets.Button(
+    description="Add New",
+    button_style="success",
+    icon="plus"
+)
+
+new_control = widgets.HBox([
+    widgets.HBox([new_target, new_button]),
+    new_values
+])
+
+# 2-B. new_result
+new_result = widgets.Output(
+    layout=widgets.Layout(border="1px solid #ddd", padding="8px", width="900px")
+)
+
+
 # event binding
 search_button.on_click(on_search_clicked)
+new_button.on_click(on_new_clicked)
