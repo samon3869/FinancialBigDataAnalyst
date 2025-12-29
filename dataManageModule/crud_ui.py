@@ -7,19 +7,19 @@ import pandas as pd
 # event handler
 
 def on_search_clicked(b):
-        
-    scheama = search_target.value
+    schema = search_target.value
     where_clause = search_where.value.strip().replace("\n", " ")
-    
-    conn = get_connection()
 
+    conn = get_connection()
     try:
-        if scheama == "concepts":
+        if schema == "concepts":
             rows = crud_ops.fetch_concepts(conn, where_clause)
-        elif scheama == "types":
+        elif schema == "types":
             rows = crud_ops.fetch_types(conn, where_clause)
-        elif scheama == "problems":
+        elif schema == "problems":
             rows = crud_ops.fetch_problems(conn, where_clause)
+        else:
+            rows = []
     finally:
         conn.close()
 
@@ -27,16 +27,27 @@ def on_search_clicked(b):
 
     with search_result:
         search_result.clear_output()
-        print(
-            f"Search Results: {len(rows)} rows found.",
-        )
+        print(f"Search Results: {len(df)} rows found.")
+
+    REL_PATH_COL = "note_path"
+
+    def to_notebook_link(rel_path: str) -> str:
+        if not rel_path:
+            return ""
+        return f"<a href='{rel_path}' target='_blank'>{rel_path}</a>"
 
     with search_detail:
         search_detail.clear_output()
-        if not df.empty:
-            display(df)
-        else:
+        if df.empty:
             print("No details to display.")
+            return
+
+        view = df
+        if REL_PATH_COL in df.columns:
+            view = df.style.format({REL_PATH_COL: to_notebook_link}, escape="html")
+
+        display(view)
+
 
 
 def on_new_clicked(b):
